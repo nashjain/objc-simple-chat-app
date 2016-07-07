@@ -15,19 +15,16 @@
 
 @implementation UserTest
 
-UserModel *user1;
 
 
 - (void)setUp {
     [super setUp];
-     user1 = [[UserModel alloc] initWithLocalFile:@"user.json"];
 }
 
 
 - (void)testParseUser {
     
-    XCTAssertEqualObjects(user1.name, @"John");
-    XCTAssertEqual(user1.age, 28);
+    XCTAssertTrue(false);
     
 }
 
