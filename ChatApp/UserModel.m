@@ -4,19 +4,18 @@
 
 @implementation UserModel
 
-- (id)initWithLocalFile:(NSString *)fileName {
-   
+-(id)initWithJSONString:(NSString*)json{
+    
     self = [super init];
     if (self) {
 
-        NSBundle *bundle = [NSBundle mainBundle];
+    NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSError *error;
+    
+        data = data ? data : [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
         
-        NSURL *url = [bundle URLForResource:fileName withExtension:nil];
-        
-        NSData *data =[NSData dataWithContentsOfURL:url];
-        NSError *error;
-        
-        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
         
         NSDateFormatter *formatter = [NSDateFormatter new];
         [formatter setDateFormat:@"dd/MM/yyyy"];
@@ -33,7 +32,7 @@
                                                      toDate:today
                                                     options:0];
         
-        NSString * str = nil;
+        NSString * str = @"a while";
         
         str = components.day > 0 ? [NSString stringWithFormat:@"%ld days",(long)components.day] : str;
         
@@ -44,9 +43,24 @@
         _memberSince = [str stringByAppendingString:@" ago"];
         
         _name = dic[@"name"] ? dic[@"name"] : @"";
+       
         
     }
     return self;
+    
+}
+- (id)initWithLocalFile:(NSString *)fileName {
+   
+        NSBundle *bundle = [NSBundle mainBundle];
+        
+        NSURL *url = [bundle URLForResource:fileName withExtension:nil];
+        
+        NSData *data =[NSData dataWithContentsOfURL:url];
+    
+    
+        NSString *jsonFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    return [self initWithJSONString:jsonFromData];
 }
 
 @end
