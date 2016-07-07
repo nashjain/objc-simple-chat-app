@@ -7,33 +7,59 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "ViewController.h"
+
+@interface ViewController (ChatAppTests)
+
+- (void)sendMessage:(NSString*)mesg onCompletion:(void (^)(BOOL success, NSError *error))completion;
+- (NSArray *)tableData;
+@end
 
 @interface ChatAppTests : XCTestCase
-
+@property (nonatomic, strong) ViewController *vc;
 @end
+
+
+
+
 
 @implementation ChatAppTests
 
 - (void)setUp {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    self.vc = [[ViewController alloc] init];
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    self.vc = nil;
     [super tearDown];
 }
 
 
-- (void)messageSendTest {
-    // A test to check message was sent successfully and is added successfully to the list of all messages which is used to update view data
+- (void)testMessageSend {
     
+    NSString *mesg = @"Hi";
     
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Testing mesg sending"];
+    
+    [self.vc sendMessage:mesg onCompletion:^(BOOL success, NSError *error) {
+        [expectation fulfill];
+        XCTAssert(success,@"Sending to server failed");
+    }];
+    
+    [self waitForExpectationsWithTimeout:0.5 handler:nil];
+}
+
+- (void)testMessageAddToDataSource {
+
+    NSString *mesg = @"Hi";
+    [self.vc sendMessage:mesg onCompletion:nil];
+    XCTAssert([[self.vc tableData] containsObject:mesg], @"Failed adding table data");
+
 }
 
 - (void)messageSendTest2 {
     // A test to check message was sent successfully and is added successfully only once to the list of all messages which is used to update view data
-    
     
 }
 
@@ -54,15 +80,6 @@
     // In case of network re-connection, the message view should show  the messages which were missed during network disconnected state
     
     
-}
-
-
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
 }
 
 @end
