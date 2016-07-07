@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "MessageModel.h"
 
 @interface ViewController ()
 
@@ -14,8 +15,11 @@
 
 @implementation ViewController
 
- NSMutableArray *tableData;
+    MessageModel *model;
 
+-(void)didRefreshMessages{
+    [self.mTableView reloadData];
+}
 - (IBAction)sendClicked:(id)sender {
     
     if(self.textField.text.length > 0){
@@ -28,72 +32,23 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
 
-    tableData = [NSMutableArray new];
+    model = [MessageModel new];
+    model.delegate = self;
     
-    [self reloadMessages];
-    [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(reloadMessages) userInfo:nil repeats:true];
-    
-    [self.mTableView reloadData];
+
 }
 
 - (void)sendMessage:(NSString*)mesg;
 {
-    [tableData addObject:mesg];
+    [model sendMessage:mesg success:^(NSArray *mesgs) {
+        [self.mTableView reloadData];
 
-    NSString *sendUrl = [NSString stringWithFormat:@"http://localhost:4567/send?message=%@",mesg];
-    
-    NSURL *url = [NSURL URLWithString:sendUrl];
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    
-    
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response,
-                                               NSData *data, NSError *connectionError)
-     {
-         if (data.length > 0 && connectionError == nil)
-         {
-             NSArray *mesg = [NSJSONSerialization JSONObjectWithData:data
-                                                                      options:0
-                                                                        error:NULL];
-             
-             
-         }
-         
-         [self reloadMessages];
-     }];
+    } failure:^(NSString *err) {
+        NSLog(@"%@",err);
+
+    }];
 }
 
--(void)reloadMessages{
-    
-    NSString *sendUrl = [NSString stringWithFormat:@"http://localhost:4567/fetchAllMessages"];
-    
-    NSURL *url = [NSURL URLWithString:sendUrl];
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    
-    
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response,
-                                               NSData *data, NSError *connectionError)
-     {
-         if (data.length > 0 && connectionError == nil)
-         {
-             NSArray *mesgs = [NSJSONSerialization JSONObjectWithData:data
-                                                             options:0
-                                                               error:NULL];
-             [tableData addObjectsFromArray:mesgs];
-             [self.mTableView reloadData];
-             
-         }
-         
-         [self reloadMessages];
-     }];
-
-    
-}
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
@@ -101,14 +56,13 @@
 
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return tableData ? tableData.count: 0;
+    return [model numberOfMessages];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell1"];
     
-    cell.textLabel.text = tableData[indexPath.row];
-    
+    cell.textLabel.text = [model contentAtIndex:indexPath.row];
     return cell;
 }
 
