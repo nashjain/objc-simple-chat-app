@@ -1,10 +1,4 @@
-//
-//  UserModel.m
-//  ChatApp
-//
-//  Created by Rohit Talwar on 07/07/16.
-//  Copyright © 2016 John Talwar. All rights reserved.
-//
+
 
 #import "UserModel.h"
 
@@ -31,11 +25,8 @@
         
         NSDate *today = [NSDate date];
         
-//        NSTimeInterval dateDiff = [today timeIntervalSinceDate:dob];
-        
         NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         
-
         
         NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay
                                                    fromDate:dob
@@ -45,11 +36,6 @@
         _age = components.year;
         
         _name = dic[@"name"] ? dic[@"name"] : @"";
-        
-        
-//        NSNumber *ageFromDic = (NSNumber*)dic[@"age"] ;
-//        _age = ageFromDic ? [ageFromDic intValue] : 0;
-        
         
     }
     return self;
