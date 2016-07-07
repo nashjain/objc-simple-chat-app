@@ -21,7 +21,7 @@
         NSDateFormatter *formatter = [NSDateFormatter new];
         [formatter setDateFormat:@"dd/MM/yyyy"];
         
-        NSDate *dob = [formatter dateFromString:(NSString*)dic[@"dob"]];
+        NSDate *dob = [formatter dateFromString:(NSString*)dic[@"doj"]];
         
         NSDate *today = [NSDate date];
         
@@ -33,7 +33,15 @@
                                                      toDate:today
                                                     options:0];
         
-        _age = components.year;
+        NSString * str = nil;
+        
+        str = components.day > 0 ? [NSString stringWithFormat:@"%ld days",(long)components.day] : str;
+        
+        str = components.month > 0 ? [NSString stringWithFormat:@"%ld months",(long)components.month] : str;
+        
+        str = components.year > 0 ? [NSString stringWithFormat:@"%ld years",(long)components.year] : str;
+        
+        _memberSince = [str stringByAppendingString:@" ago"];
         
         _name = dic[@"name"] ? dic[@"name"] : @"";
         

@@ -17,8 +17,10 @@
 
 
 - (void)testParseUser {
+    UserModel *user1 = [[UserModel alloc] initWithLocalFile:@"user.json"];
     
-    XCTAssertTrue(false);
+    XCTAssertEqualObjects(user1.memberSince, @"8 years ago");
+
     
 }
 

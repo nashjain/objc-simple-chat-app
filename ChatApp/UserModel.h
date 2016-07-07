@@ -7,7 +7,7 @@
 - (id)initWithLocalFile:(NSString *)fileName ;
 
 @property(nonatomic,strong) NSString *name;
-@property(nonatomic,readwrite) NSInteger age;
+@property(nonatomic,strong) NSString *memberSince;
 
 
 @end
